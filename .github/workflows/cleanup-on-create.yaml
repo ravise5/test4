@@ -1,21 +1,20 @@
-# This workflow will run on the first push to the main branch and clean up
-# all files that are not strictly required to build an AEM Live project.
-# This includes this particular workflow file.
+# This workflow will run upon repository creation and clean up
+# all files that are not strictly required to build an AEM Live project
+# but that we use to develop the project template. This includes this
+# particular workflow file.
 on:
   push:
     branches:
       - main
-    # This will only trigger on the first push (which includes the "Initial commit")
-    paths-ignore:
-      - '**'
-
+  workflow_dispatch:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
     permissions:
       contents: write
       actions: write
-    if: ${{ github.event.head_commit.message == 'Initial commit' }}
+    # only run if commit message is "Initial commit" on main branch
+    if: ${{ github.event_name == 'workflow_dispatch' || ( github.ref == 'refs/heads/main' && !(contains(github.event, 'head_commit') || github.event.head_commit.message == 'Initial commit' )) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
